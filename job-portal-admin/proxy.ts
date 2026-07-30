@@ -7,7 +7,7 @@ import { ROUTES } from './constants/routes';
  * Intercepts requests on the server to block unauthenticated access to
  * the dashboard and prevent authenticated users from loading the login pages.
  */
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get('job-portal-auth-token')?.value;
 
