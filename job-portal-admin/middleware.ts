@@ -22,12 +22,12 @@ export function middleware(request: NextRequest) {
 
   // 1. Authenticated user trying to access public auth pages -> redirect to dashboard
   if (token && isAuthPage) {
-    return NextResponse.redirect(new URL(ROUTES.DASHBOARD, request.url));
+    return NextResponse.redirect(new URL(ROUTES.DASHBOARD, request.nextUrl));
   }
 
   // 2. Unauthenticated user trying to access protected dashboard pages -> redirect to login
   if (!token && isDashboardPage) {
-    const loginUrl = new URL(ROUTES.LOGIN, request.url);
+    const loginUrl = new URL(ROUTES.LOGIN, request.nextUrl);
     // Keep track of the original page to redirect back after login
     if (pathname !== ROUTES.DASHBOARD) {
       loginUrl.searchParams.set('redirectTo', pathname);
@@ -55,4 +55,3 @@ export const config = {
     '/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)',
   ],
 };
-export default middleware;
