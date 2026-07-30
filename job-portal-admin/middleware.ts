@@ -22,12 +22,15 @@ export function middleware(request: NextRequest) {
 
   // 1. Authenticated user trying to access public auth pages -> redirect to dashboard
   if (token && isAuthPage) {
-    return NextResponse.redirect(new URL(ROUTES.DASHBOARD, request.nextUrl));
+    const dashboardUrl = request.nextUrl.clone();
+    dashboardUrl.pathname = ROUTES.DASHBOARD;
+    return NextResponse.redirect(dashboardUrl);
   }
 
   // 2. Unauthenticated user trying to access protected dashboard pages -> redirect to login
   if (!token && isDashboardPage) {
-    const loginUrl = new URL(ROUTES.LOGIN, request.nextUrl);
+    const loginUrl = request.nextUrl.clone();
+    loginUrl.pathname = ROUTES.LOGIN;
     // Keep track of the original page to redirect back after login
     if (pathname !== ROUTES.DASHBOARD) {
       loginUrl.searchParams.set('redirectTo', pathname);
