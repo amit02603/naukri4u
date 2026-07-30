@@ -1,0 +1,16 @@
+node_modules
+dist
+coverage
+logs
+uploads
+.env
+.env.*
+!.env.example
+.git
+.gitignore
+*.md
+docker-compose.yml
+jest.config.ts
+.eslintrc.json
+.prettierrc
+tests
