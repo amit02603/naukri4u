@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { ROUTES } from './constants/routes';
 
+// Trigger Vercel rebuild to apply Root Directory settings
 /**
  * Next.js Edge Middleware for Route Protection.
  * 
