@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Job Portal Admin Console',
-  description: 'Enterprise dashboard for managing users, postings, recruiters, and candidates.',
+  title: 'Naukri4U — Admin Console',
+  description: 'Admin dashboard for managing users, recruiters, employees, jobs, and applications.',
 };
 
 export default function RootLayout({
@@ -30,11 +30,11 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-slate-950 text-slate-100">
+      <body className="min-h-full flex flex-col">
         <QueryProvider>
           <AuthProvider>
             {children}
-            <Toaster position="top-right" theme="dark" richColors closeButton />
+            <Toaster position="top-right" richColors closeButton />
           </AuthProvider>
         </QueryProvider>
       </body>
