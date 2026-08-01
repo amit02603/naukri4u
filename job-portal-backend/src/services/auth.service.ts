@@ -271,18 +271,25 @@ export class AuthService {
     _id: { toString(): string };
     firebaseUid: string;
     phoneNumber: string;
-    role: string | null;
+    role: unknown;
     status: string;
     isProfileCompleted: boolean;
     lastLogin: Date;
     createdAt: Date;
     updatedAt: Date;
   }): ISanitizedUser {
+    const rawRole = user.role;
+    const roleString = Array.isArray(rawRole)
+      ? rawRole[0] || null
+      : typeof rawRole === 'string'
+      ? rawRole
+      : null;
+
     return {
       id: user._id.toString(),
       firebaseUid: user.firebaseUid,
       phoneNumber: user.phoneNumber,
-      role: user.role,
+      role: roleString,
       status: user.status,
       isProfileCompleted: user.isProfileCompleted,
       lastLogin: user.lastLogin,

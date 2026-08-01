@@ -32,13 +32,19 @@ export const authenticate = (
     }
 
     const decoded = TokenHelper.verifyAccessToken(token);
+    const rawRole = decoded.role as unknown;
+    const roleString = Array.isArray(rawRole)
+      ? rawRole[0] || ''
+      : typeof rawRole === 'string'
+      ? rawRole
+      : '';
 
     // Attach user payload with resolved permissions to the request
     req.user = {
       userId: decoded.userId,
       firebaseUid: decoded.firebaseUid,
-      role: decoded.role,
-      permissions: getPermissionsForRole(decoded.role),
+      role: roleString,
+      permissions: getPermissionsForRole(roleString),
     };
 
     next();
@@ -89,11 +95,18 @@ export const optionalAuthenticate = (
 
   try {
     const decoded = TokenHelper.verifyAccessToken(token);
+    const rawRole = decoded.role as unknown;
+    const roleString = Array.isArray(rawRole)
+      ? rawRole[0] || ''
+      : typeof rawRole === 'string'
+      ? rawRole
+      : '';
+
     req.user = {
       userId: decoded.userId,
       firebaseUid: decoded.firebaseUid,
-      role: decoded.role,
-      permissions: getPermissionsForRole(decoded.role),
+      role: roleString,
+      permissions: getPermissionsForRole(roleString),
     };
   } catch {
     // Token is invalid but that's OK — treat as anonymous

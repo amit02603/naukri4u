@@ -28,15 +28,22 @@ export const requireRole = (...roles: RoleName[]) => {
       return;
     }
 
-    if (!req.user.role) {
+    const rawRole = req.user.role as unknown;
+    const userRole = Array.isArray(rawRole)
+      ? rawRole[0] || ''
+      : typeof rawRole === 'string'
+      ? rawRole
+      : '';
+
+    if (!userRole) {
       next(ApiError.forbidden('You must select a role before accessing this resource'));
       return;
     }
 
-    if (!roles.includes(req.user.role as RoleName)) {
+    if (!roles.includes(userRole as RoleName)) {
       next(
         ApiError.forbidden(
-          `Access denied. Required role: ${roles.join(' or ')}. Your role: ${req.user.role}`,
+          `Access denied. Required role: ${roles.join(' or ')}. Your role: ${userRole}`,
         ),
       );
       return;

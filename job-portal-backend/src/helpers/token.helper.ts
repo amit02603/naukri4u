@@ -16,10 +16,17 @@ export class TokenHelper {
    * ID, Firebase UID, and role.
    */
   static generateAccessToken(user: IUser): string {
+    const rawRole = user.role as unknown;
+    const roleString = Array.isArray(rawRole)
+      ? rawRole[0] || ''
+      : typeof rawRole === 'string'
+      ? rawRole
+      : '';
+
     const payload: Omit<IJwtPayload, 'iat' | 'exp'> = {
       userId: user._id.toString(),
       firebaseUid: user.firebaseUid,
-      role: user.role || '',
+      role: roleString,
     };
 
     return jwt.sign(payload, env.JWT_SECRET, {
