@@ -36,30 +36,32 @@ export default function ApplicationsPage() {
       ) : error ? (
         <p style={{ color: '#ef4444', fontSize: '0.875rem' }}>Failed to load applications. Make sure you are logged in as admin.</p>
       ) : (data?.length ?? 0) > 0 ? (
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Candidate</th>
-              <th>Job</th>
-              <th>Status</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data?.map((app) => (
-              <tr key={app.id}>
-                <td>{app.applicant?.phoneNumber || '—'}</td>
-                <td>{app.job?.title || '—'}</td>
-                <td>
-                  <span className={getStatusBadgeClass(app.status)}>
-                    {app.status.charAt(0).toUpperCase() + app.status.slice(1)}
-                  </span>
-                </td>
-                <td>{new Date(app.createdAt).toLocaleDateString()}</td>
+        <div className="table-responsive">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Candidate</th>
+                <th>Job</th>
+                <th>Status</th>
+                <th>Date</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {data?.map((app) => (
+                <tr key={app.id}>
+                  <td>{app.applicant?.phoneNumber || '—'}</td>
+                  <td>{app.job?.title || '—'}</td>
+                  <td>
+                    <span className={getStatusBadgeClass(app.status)}>
+                      {app.status.charAt(0).toUpperCase() + app.status.slice(1)}
+                    </span>
+                  </td>
+                  <td>{new Date(app.createdAt).toLocaleDateString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : (
         <div style={{
           background: '#ffffff', borderRadius: 8, padding: '40px 24px',

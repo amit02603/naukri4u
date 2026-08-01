@@ -139,3 +139,26 @@ body {
 .animate-fade-in {
   animation: fadeIn 0.3s ease-out;
 }
+
+/* ─── Mobile Responsiveness Utilities ─── */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: var(--radius);
+  border: 1px solid var(--table-border);
+}
+
+@media (max-width: 768px) {
+  .page-title {
+    font-size: 1.35rem;
+    margin-bottom: 0.75rem;
+  }
+  .data-table thead th,
+  .data-table tbody td {
+    padding: 10px 12px;
+    font-size: 0.8125rem;
+    white-space: nowrap;
+  }
+}
+

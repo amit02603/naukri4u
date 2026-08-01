@@ -160,80 +160,82 @@ export default function EmployeesPage() {
       ) : error ? (
         <p style={{ color: '#ef4444', fontSize: '0.875rem' }}>Failed to load employees. Make sure you are logged in as admin.</p>
       ) : filteredEmployees.length > 0 ? (
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Phone</th>
-              <th>Skills</th>
-              <th>Experience</th>
-              <th style={{ textAlign: 'right' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredEmployees.map((employee) => (
-              <tr key={employee.id}>
-                <td style={{ fontWeight: 600, color: '#1e293b' }}>{employee.name}</td>
-                <td>{employee.phone || '—'}</td>
-                <td>
-                  {employee.skills ? (
-                    <span style={{ fontSize: '0.8125rem', background: '#e0f2fe', color: '#0369a1', padding: '2px 8px', borderRadius: 4 }}>
-                      {employee.skills}
-                    </span>
-                  ) : '—'}
-                </td>
-                <td>{employee.experience || '—'}</td>
-                <td style={{ textAlign: 'right' }}>
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-                    {/* Edit Button */}
-                    <button
-                      title="Edit Profile"
-                      onClick={() => {
-                        setEditingEmployee(employee);
-                        setEditForm({
-                          name: employee.name,
-                          phone: employee.phone || '',
-                          skills: employee.skills || '',
-                          experience: employee.experience || '',
-                        });
-                      }}
-                      style={{
-                        padding: 6, background: '#f1f5f9', border: 'none',
-                        borderRadius: 4, cursor: 'pointer', color: '#475569',
-                      }}
-                    >
-                      <Edit2 size={15} />
-                    </button>
-
-                    {/* Block / Unblock Toggle */}
-                    <button
-                      title="Block / Unblock"
-                      onClick={() => statusMutation.mutate({ userId: employee.userId, status: 'blocked' })}
-                      style={{
-                        padding: 6, background: '#fef2f2', border: 'none',
-                        borderRadius: 4, cursor: 'pointer', color: '#ef4444',
-                      }}
-                    >
-                      <Ban size={15} />
-                    </button>
-
-                    {/* Delete Button */}
-                    <button
-                      title="Delete User"
-                      onClick={() => setDeletingUserId(employee.userId)}
-                      style={{
-                        padding: 6, background: '#fef2f2', border: 'none',
-                        borderRadius: 4, cursor: 'pointer', color: '#dc2626',
-                      }}
-                    >
-                      <Trash2 size={15} />
-                    </button>
-                  </div>
-                </td>
+        <div className="table-responsive">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Skills</th>
+                <th>Experience</th>
+                <th style={{ textAlign: 'right' }}>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredEmployees.map((employee) => (
+                <tr key={employee.id}>
+                  <td style={{ fontWeight: 600, color: '#1e293b' }}>{employee.name}</td>
+                  <td>{employee.phone || '—'}</td>
+                  <td>
+                    {employee.skills ? (
+                      <span style={{ fontSize: '0.8125rem', background: '#e0f2fe', color: '#0369a1', padding: '2px 8px', borderRadius: 4 }}>
+                        {employee.skills}
+                      </span>
+                    ) : '—'}
+                  </td>
+                  <td>{employee.experience || '—'}</td>
+                  <td style={{ textAlign: 'right' }}>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+                      {/* Edit Button */}
+                      <button
+                        title="Edit Profile"
+                        onClick={() => {
+                          setEditingEmployee(employee);
+                          setEditForm({
+                            name: employee.name,
+                            phone: employee.phone || '',
+                            skills: employee.skills || '',
+                            experience: employee.experience || '',
+                          });
+                        }}
+                        style={{
+                          padding: 6, background: '#f1f5f9', border: 'none',
+                          borderRadius: 4, cursor: 'pointer', color: '#475569',
+                        }}
+                      >
+                        <Edit2 size={15} />
+                      </button>
+
+                      {/* Block / Unblock Toggle */}
+                      <button
+                        title="Block / Unblock"
+                        onClick={() => statusMutation.mutate({ userId: employee.userId, status: 'blocked' })}
+                        style={{
+                          padding: 6, background: '#fef2f2', border: 'none',
+                          borderRadius: 4, cursor: 'pointer', color: '#ef4444',
+                        }}
+                      >
+                        <Ban size={15} />
+                      </button>
+
+                      {/* Delete Button */}
+                      <button
+                        title="Delete User"
+                        onClick={() => setDeletingUserId(employee.userId)}
+                        style={{
+                          padding: 6, background: '#fef2f2', border: 'none',
+                          borderRadius: 4, cursor: 'pointer', color: '#dc2626',
+                        }}
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : (
         <div style={{
           background: '#ffffff', borderRadius: 8, padding: '40px 24px',

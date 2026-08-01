@@ -143,76 +143,78 @@ export default function RecruitersPage() {
       ) : error ? (
         <p style={{ color: '#ef4444', fontSize: '0.875rem' }}>Failed to load recruiters. Make sure you are logged in as admin.</p>
       ) : filteredRecruiters.length > 0 ? (
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Recruiter Name</th>
-              <th>Company</th>
-              <th>Designation</th>
-              <th style={{ textAlign: 'right' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredRecruiters.map((recruiter) => (
-              <tr key={recruiter.id}>
-                <td style={{ fontWeight: 600, color: '#1e293b' }}>{recruiter.name}</td>
-                <td>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontWeight: 500, color: '#0f172a' }}>
-                    <Building size={14} color="#3b82f6" />
-                    {recruiter.company}
-                  </span>
-                </td>
-                <td>{recruiter.designation || '—'}</td>
-                <td style={{ textAlign: 'right' }}>
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-                    {/* Edit Button */}
-                    <button
-                      title="Edit Recruiter & Company Info"
-                      onClick={() => {
-                        setEditingRecruiter(recruiter);
-                        setEditForm({
-                          name: recruiter.name,
-                          company: recruiter.company,
-                          designation: recruiter.designation || '',
-                        });
-                      }}
-                      style={{
-                        padding: 6, background: '#f1f5f9', border: 'none',
-                        borderRadius: 4, cursor: 'pointer', color: '#475569',
-                      }}
-                    >
-                      <Edit2 size={15} />
-                    </button>
-
-                    {/* Block / Unblock Toggle */}
-                    <button
-                      title="Block / Unblock Recruiter"
-                      onClick={() => statusMutation.mutate({ userId: recruiter.userId, status: 'blocked' })}
-                      style={{
-                        padding: 6, background: '#fef2f2', border: 'none',
-                        borderRadius: 4, cursor: 'pointer', color: '#ef4444',
-                      }}
-                    >
-                      <Ban size={15} />
-                    </button>
-
-                    {/* Delete Button */}
-                    <button
-                      title="Delete Recruiter Account"
-                      onClick={() => setDeletingUserId(recruiter.userId)}
-                      style={{
-                        padding: 6, background: '#fef2f2', border: 'none',
-                        borderRadius: 4, cursor: 'pointer', color: '#dc2626',
-                      }}
-                    >
-                      <Trash2 size={15} />
-                    </button>
-                  </div>
-                </td>
+        <div className="table-responsive">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Recruiter Name</th>
+                <th>Company</th>
+                <th>Designation</th>
+                <th style={{ textAlign: 'right' }}>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredRecruiters.map((recruiter) => (
+                <tr key={recruiter.id}>
+                  <td style={{ fontWeight: 600, color: '#1e293b' }}>{recruiter.name}</td>
+                  <td>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontWeight: 500, color: '#0f172a' }}>
+                      <Building size={14} color="#3b82f6" />
+                      {recruiter.company}
+                    </span>
+                  </td>
+                  <td>{recruiter.designation || '—'}</td>
+                  <td style={{ textAlign: 'right' }}>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+                      {/* Edit Button */}
+                      <button
+                        title="Edit Recruiter & Company Info"
+                        onClick={() => {
+                          setEditingRecruiter(recruiter);
+                          setEditForm({
+                            name: recruiter.name,
+                            company: recruiter.company,
+                            designation: recruiter.designation || '',
+                          });
+                        }}
+                        style={{
+                          padding: 6, background: '#f1f5f9', border: 'none',
+                          borderRadius: 4, cursor: 'pointer', color: '#475569',
+                        }}
+                      >
+                        <Edit2 size={15} />
+                      </button>
+
+                      {/* Block / Unblock Toggle */}
+                      <button
+                        title="Block / Unblock Recruiter"
+                        onClick={() => statusMutation.mutate({ userId: recruiter.userId, status: 'blocked' })}
+                        style={{
+                          padding: 6, background: '#fef2f2', border: 'none',
+                          borderRadius: 4, cursor: 'pointer', color: '#ef4444',
+                        }}
+                      >
+                        <Ban size={15} />
+                      </button>
+
+                      {/* Delete Button */}
+                      <button
+                        title="Delete Recruiter Account"
+                        onClick={() => setDeletingUserId(recruiter.userId)}
+                        style={{
+                          padding: 6, background: '#fef2f2', border: 'none',
+                          borderRadius: 4, cursor: 'pointer', color: '#dc2626',
+                        }}
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : (
         <div style={{
           background: '#ffffff', borderRadius: 8, padding: '40px 24px',

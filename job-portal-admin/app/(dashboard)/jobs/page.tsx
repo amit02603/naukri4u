@@ -35,30 +35,32 @@ export default function JobsPage() {
       ) : error ? (
         <p style={{ color: '#ef4444', fontSize: '0.875rem' }}>Failed to load jobs. Make sure you are logged in as admin.</p>
       ) : (data?.length ?? 0) > 0 ? (
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>Company</th>
-              <th>Status</th>
-              <th>Created</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data?.map((job) => (
-              <tr key={job.id}>
-                <td>{job.title}</td>
-                <td>{job.company}</td>
-                <td>
-                  <span className={getStatusBadgeClass(job.status)}>
-                    {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
-                  </span>
-                </td>
-                <td>{new Date(job.createdAt).toLocaleDateString()}</td>
+        <div className="table-responsive">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Company</th>
+                <th>Status</th>
+                <th>Created</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {data?.map((job) => (
+                <tr key={job.id}>
+                  <td>{job.title}</td>
+                  <td>{job.company}</td>
+                  <td>
+                    <span className={getStatusBadgeClass(job.status)}>
+                      {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
+                    </span>
+                  </td>
+                  <td>{new Date(job.createdAt).toLocaleDateString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : (
         <div style={{
           background: '#ffffff', borderRadius: 8, padding: '40px 24px',

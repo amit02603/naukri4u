@@ -37,6 +37,40 @@ export default function AnalyticsPage() {
 
   return (
     <div>
+      <style jsx>{`
+        .analytics-stats-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 20px;
+          margin-bottom: 28px;
+        }
+        .analytics-charts-grid {
+          display: grid;
+          grid-template-columns: 1.5fr 1fr;
+          gap: 20px;
+          margin-bottom: 28px;
+        }
+        .analytics-pie-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 20px;
+        }
+        @media (max-width: 900px) {
+          .analytics-stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+          .analytics-charts-grid,
+          .analytics-pie-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+        @media (max-width: 480px) {
+          .analytics-stats-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
+
       {/* ─── Page Title ─── */}
       <div style={{ marginBottom: 28 }}>
         <h1 className="page-title" style={{ margin: '0 0 6px' }}>Comprehensive Analytics</h1>
@@ -46,7 +80,7 @@ export default function AnalyticsPage() {
       </div>
 
       {/* ─── Metric Stat Cards ─── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20, marginBottom: 28 }}>
+      <div className="analytics-stats-grid">
         {statCards.map((card) => (
           <div key={card.label} style={{
             background: '#ffffff', borderRadius: 8, padding: '24px',
@@ -70,7 +104,7 @@ export default function AnalyticsPage() {
       </div>
 
       {/* ─── Charts Section 1: Growth & Daily Activity ─── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: 20, marginBottom: 28 }}>
+      <div className="analytics-charts-grid">
         
         {/* User Activity & Applications (30 Days Bar Chart) */}
         <div style={{ background: '#ffffff', borderRadius: 8, padding: '24px', border: '1px solid #e2e8f0' }}>
@@ -127,7 +161,7 @@ export default function AnalyticsPage() {
       </div>
 
       {/* ─── Charts Section 2: Job & Application Breakdowns ─── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+      <div className="analytics-pie-grid">
         
         {/* Job Status Breakdown */}
         <div style={{ background: '#ffffff', borderRadius: 8, padding: '24px', border: '1px solid #e2e8f0' }}>

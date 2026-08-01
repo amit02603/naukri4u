@@ -52,6 +52,41 @@ export default function DashboardPage() {
 
   return (
     <div>
+      <style jsx>{`
+        .dashboard-stats-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 20px;
+          margin-bottom: 28px;
+        }
+        .dashboard-charts-grid {
+          display: grid;
+          grid-template-columns: 1.5fr 1fr;
+          gap: 20px;
+          margin-bottom: 28px;
+        }
+        .dashboard-actions-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 20px;
+          margin-bottom: 28px;
+        }
+        @media (max-width: 900px) {
+          .dashboard-stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+          .dashboard-charts-grid,
+          .dashboard-actions-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+        @media (max-width: 480px) {
+          .dashboard-stats-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
+
       {/* ─── Welcome Banner ─── */}
       <div style={{ marginBottom: 28 }}>
         <h1 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#1e293b', margin: '0 0 6px' }}>
@@ -63,7 +98,7 @@ export default function DashboardPage() {
       </div>
 
       {/* ─── Stat Cards ─── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20, marginBottom: 28 }}>
+      <div className="dashboard-stats-grid">
         {statCards.map((card) => (
           <div key={card.label} style={{
             background: '#ffffff', borderRadius: 8, padding: '24px',
@@ -88,7 +123,7 @@ export default function DashboardPage() {
       </div>
 
       {/* ─── Charts Row ─── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: 20, marginBottom: 28 }}>
+      <div className="dashboard-charts-grid">
         {/* Applications Overview Area Chart */}
         <div style={{
           background: '#ffffff', borderRadius: 8, padding: '24px',
@@ -167,7 +202,7 @@ export default function DashboardPage() {
       </div>
 
       {/* ─── Quick Actions & Recent Activity ─── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 28 }}>
+      <div className="dashboard-actions-grid">
         {/* Quick Actions */}
         <div style={{
           background: '#ffffff', borderRadius: 8, padding: '24px',

@@ -35,30 +35,34 @@ export default function UsersPage() {
       ) : error ? (
         <p style={{ color: '#ef4444', fontSize: '0.875rem' }}>Failed to load users. Make sure you are logged in as admin.</p>
       ) : (data?.length ?? 0) > 0 ? (
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Phone</th>
-              <th>Role</th>
-              <th>Status</th>
-              <th>Joined</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data?.map((user) => (
-              <tr key={user.id}>
-                <td>{user.phoneNumber}</td>
-                <td>
-                  <span className={getRoleBadgeClass(user.role)}>
-                    {user.role || 'Unassigned'}
-                  </span>
-                </td>
-                <td style={{ textTransform: 'capitalize' }}>{user.status}</td>
-                <td>{new Date(user.createdAt).toLocaleDateString()}</td>
+        <div className="table-responsive">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>User ID</th>
+                <th>Phone Number</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Joined Date</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {data?.map((user) => (
+                <tr key={user.id}>
+                  <td style={{ fontFamily: 'monospace', fontSize: '0.8125rem' }}>{user.id}</td>
+                  <td>{user.phoneNumber}</td>
+                  <td>
+                    <span className={getRoleBadgeClass(user.role)}>
+                      {user.role || 'Unassigned'}
+                    </span>
+                  </td>
+                  <td style={{ textTransform: 'capitalize' }}>{user.status}</td>
+                  <td>{new Date(user.createdAt).toLocaleDateString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : (
         <div style={{
           background: '#ffffff', borderRadius: 8, padding: '40px 24px',
