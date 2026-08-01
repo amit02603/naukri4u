@@ -2,94 +2,270 @@
 
 import React from 'react';
 import { useAuth } from '../../hooks/useAuth';
-import { Users, Briefcase, FileSpreadsheet, UserCheck } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { adminService, DashboardStats } from '../../services/adminService';
+import { Users, UserCheck, Briefcase, FileSpreadsheet } from 'lucide-react';
+import Link from 'next/link';
+import {
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  PieChart, Pie, Cell, Legend,
+} from 'recharts';
+import { ROUTES } from '../../constants/routes';
 
 /**
  * Dashboard Home Page.
- * Shows summary stat cards for quick overview of platform data.
+ * Shows welcome banner, stat cards, application overview chart,
+ * user distribution donut, quick actions, recent activity, and recent jobs.
+ * All data powered by the /admin/dashboard API.
  */
+
+const PIE_COLORS = ['#3b82f6', '#ef4444', '#f59e0b', '#94a3b8'];
+
 export default function DashboardPage() {
   const { user } = useAuth();
 
-  const stats = [
-    { label: 'Total Users', value: '5', icon: Users, color: '#3b82f6' },
-    { label: 'Recruiters', value: '2', icon: UserCheck, color: '#8b5cf6' },
-    { label: 'Active Jobs', value: '3', icon: Briefcase, color: '#22c55e' },
-    { label: 'Applications', value: '1', icon: FileSpreadsheet, color: '#f59e0b' },
+  const { data, isLoading } = useQuery<DashboardStats>({
+    queryKey: ['dashboard-stats'],
+    queryFn: async () => {
+      const res = await adminService.getDashboardStats();
+      return res.data as DashboardStats;
+    },
+    staleTime: 30000,
+  });
+
+  const stats = data?.stats;
+  const displayName = user?.role === 'admin' ? 'Admin' : (user?.phoneNumber || 'User');
+
+  const statCards = [
+    { label: 'Total Users', value: stats?.totalUsers ?? 0, icon: Users, color: '#3b82f6', bg: '#3b82f615' },
+    { label: 'Total Recruiters', value: stats?.totalRecruiters ?? 0, icon: UserCheck, color: '#8b5cf6', bg: '#8b5cf615' },
+    { label: 'Total Jobs', value: stats?.totalJobs ?? 0, icon: Briefcase, color: '#22c55e', bg: '#22c55e15' },
+    { label: 'Total Applications', value: stats?.totalApplications ?? 0, icon: FileSpreadsheet, color: '#ef4444', bg: '#ef444415' },
+  ];
+
+  const quickActions = [
+    { label: 'Recruiters', href: ROUTES.RECRUITERS },
+    { label: 'Jobs', href: ROUTES.JOBS },
+    { label: 'Applications', href: ROUTES.APPLICATIONS },
+    { label: 'Users', href: ROUTES.USERS },
   ];
 
   return (
     <div>
-      <h1 className="page-title">Dashboard</h1>
-
-      {/* Welcome Banner */}
-      <div style={{
-        background: '#ffffff', borderRadius: 8, padding: '24px 28px',
-        border: '1px solid #e2e8f0', marginBottom: 28,
-      }}>
-        <h2 style={{ fontSize: '1.125rem', fontWeight: 600, color: '#1e293b', margin: '0 0 6px' }}>
-          Welcome back{user?.role === 'admin' ? ', Admin' : ''}!
-        </h2>
+      {/* ─── Welcome Banner ─── */}
+      <div style={{ marginBottom: 28 }}>
+        <h1 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#1e293b', margin: '0 0 6px' }}>
+          Welcome back, {displayName} 👋
+        </h1>
         <p style={{ fontSize: '0.875rem', color: '#64748b', margin: 0 }}>
-          Here is a quick overview of your Naukri4U platform activity.
+          Here&apos;s what&apos;s happening with your job portal today.
         </p>
       </div>
 
-      {/* Stats Grid */}
+      {/* ─── Stat Cards ─── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20, marginBottom: 28 }}>
-        {stats.map((stat) => (
-          <div key={stat.label} style={{
+        {statCards.map((card) => (
+          <div key={card.label} style={{
             background: '#ffffff', borderRadius: 8, padding: '24px',
             border: '1px solid #e2e8f0',
             display: 'flex', alignItems: 'center', gap: 16,
           }}>
             <div style={{
               width: 48, height: 48, borderRadius: 10,
-              background: `${stat.color}15`, display: 'flex',
+              background: card.bg, display: 'flex',
               alignItems: 'center', justifyContent: 'center',
             }}>
-              <stat.icon size={22} color={stat.color} />
+              <card.icon size={22} color={card.color} />
             </div>
             <div>
+              <p style={{ fontSize: '0.8125rem', color: '#64748b', margin: '0 0 2px' }}>{card.label}</p>
               <p style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1e293b', margin: 0, lineHeight: 1.2 }}>
-                {stat.value}
-              </p>
-              <p style={{ fontSize: '0.8125rem', color: '#64748b', margin: 0 }}>
-                {stat.label}
+                {isLoading ? '—' : card.value}
               </p>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Account Info Card */}
-      <div style={{
-        background: '#ffffff', borderRadius: 8, padding: '24px 28px',
-        border: '1px solid #e2e8f0',
-      }}>
-        <h3 style={{ fontSize: '1rem', fontWeight: 600, color: '#1e293b', margin: '0 0 16px' }}>
-          Your Account
-        </h3>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px 32px' }}>
-          <div>
-            <p style={{ fontSize: '0.75rem', color: '#94a3b8', margin: '0 0 2px', fontWeight: 500 }}>Phone Number</p>
-            <p style={{ fontSize: '0.875rem', color: '#1e293b', margin: 0, fontWeight: 500 }}>{user?.phoneNumber || 'N/A'}</p>
-          </div>
-          <div>
-            <p style={{ fontSize: '0.75rem', color: '#94a3b8', margin: '0 0 2px', fontWeight: 500 }}>Role</p>
-            <p style={{ fontSize: '0.875rem', color: '#1e293b', margin: 0, fontWeight: 500, textTransform: 'capitalize' }}>{user?.role || 'No Role'}</p>
-          </div>
-          <div>
-            <p style={{ fontSize: '0.75rem', color: '#94a3b8', margin: '0 0 2px', fontWeight: 500 }}>Status</p>
-            <p style={{ fontSize: '0.875rem', color: '#22c55e', margin: 0, fontWeight: 500, textTransform: 'capitalize' }}>{user?.status || 'N/A'}</p>
-          </div>
-          <div>
-            <p style={{ fontSize: '0.75rem', color: '#94a3b8', margin: '0 0 2px', fontWeight: 500 }}>Member Since</p>
-            <p style={{ fontSize: '0.875rem', color: '#1e293b', margin: 0, fontWeight: 500 }}>
-              {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'N/A'}
-            </p>
+      {/* ─── Charts Row ─── */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: 20, marginBottom: 28 }}>
+        {/* Applications Overview Area Chart */}
+        <div style={{
+          background: '#ffffff', borderRadius: 8, padding: '24px',
+          border: '1px solid #e2e8f0',
+        }}>
+          <h2 style={{ fontSize: '1.125rem', fontWeight: 600, color: '#1e293b', margin: '0 0 20px' }}>
+            Applications Overview
+          </h2>
+          {isLoading ? (
+            <div style={{ height: 250, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}>
+              Loading chart...
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height={250}>
+              <AreaChart data={data?.applicationTrend || []}>
+                <defs>
+                  <linearGradient id="colorApps" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                <XAxis dataKey="month" stroke="#94a3b8" fontSize={12} />
+                <YAxis stroke="#94a3b8" fontSize={12} allowDecimals={false} />
+                <Tooltip
+                  contentStyle={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 6, fontSize: '0.8125rem' }}
+                />
+                <Area
+                  type="monotone" dataKey="count" name="Applications"
+                  stroke="#3b82f6" strokeWidth={2}
+                  fillOpacity={1} fill="url(#colorApps)"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          )}
+        </div>
+
+        {/* Users Distribution Donut Chart */}
+        <div style={{
+          background: '#ffffff', borderRadius: 8, padding: '24px',
+          border: '1px solid #e2e8f0',
+        }}>
+          <h2 style={{ fontSize: '1.125rem', fontWeight: 600, color: '#1e293b', margin: '0 0 20px' }}>
+            Users Distribution
+          </h2>
+          {isLoading ? (
+            <div style={{ height: 250, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}>
+              Loading chart...
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height={250}>
+              <PieChart>
+                <Pie
+                  data={data?.userDistribution || []}
+                  cx="50%" cy="50%"
+                  innerRadius={60} outerRadius={90}
+                  paddingAngle={4}
+                  dataKey="count" nameKey="role"
+                >
+                  {(data?.userDistribution || []).map((_entry, index) => (
+                    <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                  ))}
+                </Pie>
+                <Legend
+                  formatter={(value: string) => (
+                    <span style={{ color: '#1e293b', fontSize: '0.8125rem', textTransform: 'capitalize' }}>{value}</span>
+                  )}
+                />
+                <Tooltip
+                  contentStyle={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 6, fontSize: '0.8125rem' }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          )}
+        </div>
+      </div>
+
+      {/* ─── Quick Actions & Recent Activity ─── */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 28 }}>
+        {/* Quick Actions */}
+        <div style={{
+          background: '#ffffff', borderRadius: 8, padding: '24px',
+          border: '1px solid #e2e8f0',
+        }}>
+          <h2 style={{ fontSize: '1.125rem', fontWeight: 600, color: '#1e293b', margin: '0 0 20px' }}>
+            Quick Actions
+          </h2>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            {quickActions.map((action) => (
+              <Link
+                key={action.label}
+                href={action.href}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  padding: '12px 16px', borderRadius: 8,
+                  border: '1px solid #e2e8f0', background: '#f8fafc',
+                  color: '#1e293b', fontSize: '0.875rem', fontWeight: 500,
+                  textDecoration: 'none', transition: 'all 0.15s ease',
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.background = '#e2e8f0';
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.background = '#f8fafc';
+                }}
+              >
+                {action.label}
+              </Link>
+            ))}
           </div>
         </div>
+
+        {/* Recent Activity */}
+        <div style={{
+          background: '#ffffff', borderRadius: 8, padding: '24px',
+          border: '1px solid #e2e8f0',
+        }}>
+          <h2 style={{ fontSize: '1.125rem', fontWeight: 600, color: '#1e293b', margin: '0 0 20px' }}>
+            Recent Activity
+          </h2>
+          {isLoading ? (
+            <p style={{ color: '#94a3b8', fontSize: '0.875rem' }}>Loading...</p>
+          ) : (data?.recentActivity?.length ?? 0) > 0 ? (
+            <ul style={{ listStyle: 'disc', paddingLeft: 20, margin: 0 }}>
+              {data?.recentActivity.map((item, idx) => (
+                <li key={idx} style={{ fontSize: '0.875rem', color: '#475569', marginBottom: 8 }}>
+                  {item.message}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p style={{ color: '#94a3b8', fontSize: '0.875rem', margin: 0 }}>No recent activity</p>
+          )}
+        </div>
+      </div>
+
+      {/* ─── Recent Jobs Table ─── */}
+      <div style={{
+        background: '#ffffff', borderRadius: 8, padding: '24px',
+        border: '1px solid #e2e8f0',
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+          <h2 style={{ fontSize: '1.125rem', fontWeight: 600, color: '#1e293b', margin: 0 }}>
+            Recent Jobs
+          </h2>
+          <Link href={ROUTES.JOBS} style={{ fontSize: '0.8125rem', color: '#3b82f6', textDecoration: 'none' }}>
+            View All
+          </Link>
+        </div>
+        {isLoading ? (
+          <p style={{ color: '#94a3b8', fontSize: '0.875rem' }}>Loading...</p>
+        ) : (data?.recentJobs?.length ?? 0) > 0 ? (
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Job</th>
+                <th>Company</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data?.recentJobs.map((job) => (
+                <tr key={job.id}>
+                  <td>{job.title}</td>
+                  <td>{job.company}</td>
+                  <td>
+                    <span className={`badge badge-${job.status === 'active' ? 'applied' : job.status === 'pending' ? 'pending' : 'rejected'}`}>
+                      {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p style={{ color: '#94a3b8', fontSize: '0.875rem', margin: 0 }}>No jobs posted yet</p>
+        )}
       </div>
     </div>
   );

@@ -1,41 +1,72 @@
 'use client';
 
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { adminService, AdminJob } from '../../../services/adminService';
 
 /**
  * Jobs Page — Admin view of all job postings.
- * Shows a data table with Title, Company, and Created columns.
- * Mock data matching client reference screenshots.
+ * Fetches data from GET /admin/jobs API.
  */
 
-const mockJobs = [
-  { title: '.NET Developer', company: 'Arohar Technologies', created: '2026-06-03T07:02:13.77903Z' },
-  { title: 'Java Developer', company: 'Arohar Technologies', created: '2026-06-03T07:40:41.89041Z' },
-  { title: 'Salesforce Developer', company: 'Evon Technologies', created: '2026-06-03T07:43:53.7316Z' },
-];
+function getStatusBadgeClass(status: string): string {
+  switch (status.toLowerCase()) {
+    case 'active': return 'badge badge-applied';
+    case 'pending': return 'badge badge-pending';
+    case 'closed': return 'badge badge-rejected';
+    default: return 'badge';
+  }
+}
 
 export default function JobsPage() {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['admin-jobs'],
+    queryFn: async () => {
+      const res = await adminService.getJobs(1, 50);
+      return res.data as AdminJob[];
+    },
+  });
+
   return (
     <div>
       <h1 className="page-title">Jobs</h1>
-      <table className="data-table">
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Company</th>
-            <th>Created</th>
-          </tr>
-        </thead>
-        <tbody>
-          {mockJobs.map((job, idx) => (
-            <tr key={idx}>
-              <td>{job.title}</td>
-              <td>{job.company}</td>
-              <td>{job.created}</td>
+      {isLoading ? (
+        <p style={{ color: '#94a3b8', fontSize: '0.875rem' }}>Loading jobs...</p>
+      ) : error ? (
+        <p style={{ color: '#ef4444', fontSize: '0.875rem' }}>Failed to load jobs. Make sure you are logged in as admin.</p>
+      ) : (data?.length ?? 0) > 0 ? (
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Company</th>
+              <th>Status</th>
+              <th>Created</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {data?.map((job) => (
+              <tr key={job.id}>
+                <td>{job.title}</td>
+                <td>{job.company}</td>
+                <td>
+                  <span className={getStatusBadgeClass(job.status)}>
+                    {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
+                  </span>
+                </td>
+                <td>{new Date(job.createdAt).toLocaleDateString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <div style={{
+          background: '#ffffff', borderRadius: 8, padding: '40px 24px',
+          border: '1px solid #e2e8f0', textAlign: 'center',
+        }}>
+          <p style={{ color: '#94a3b8', fontSize: '0.875rem', margin: 0 }}>No jobs posted yet</p>
+        </div>
+      )}
     </div>
   );
 }

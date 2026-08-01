@@ -1,24 +1,17 @@
 'use client';
 
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { adminService, AdminUser } from '../../../services/adminService';
 
 /**
  * Users Page — Admin view of all platform users.
- * Shows a data table with Name, Phone, and Role columns.
- * Mock data matching client reference screenshots.
+ * Fetches data from GET /admin/users API.
  */
 
-const mockUsers = [
-  { name: 'Rahul Sharma', phone: '9999999999', role: 'Recruiter' },
-  { name: 'Ankit Rawat', phone: '7668942630', role: 'Employee' },
-  { name: 'Akshay Gupta', phone: '9999999991', role: 'Recruiter' },
-  { name: 'Ankit Thaiwal', phone: '7457088052', role: 'Employee' },
-  { name: 'Admin Savvy', phone: '123456987', role: 'Admin' },
-];
-
-function getRoleBadgeClass(role: string): string {
-  switch (role.toLowerCase()) {
-    case 'recruiter': return 'badge badge-recruiter';
+function getRoleBadgeClass(role: string | null): string {
+  switch (role?.toLowerCase()) {
+    case 'employer': return 'badge badge-recruiter';
     case 'employee': return 'badge badge-employee';
     case 'admin': return 'badge badge-admin';
     default: return 'badge';
@@ -26,29 +19,54 @@ function getRoleBadgeClass(role: string): string {
 }
 
 export default function UsersPage() {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['admin-users'],
+    queryFn: async () => {
+      const res = await adminService.getUsers(1, 50);
+      return res.data as AdminUser[];
+    },
+  });
+
   return (
     <div>
       <h1 className="page-title">Users</h1>
-      <table className="data-table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Phone</th>
-            <th>Role</th>
-          </tr>
-        </thead>
-        <tbody>
-          {mockUsers.map((user, idx) => (
-            <tr key={idx}>
-              <td>{user.name}</td>
-              <td>{user.phone}</td>
-              <td>
-                <span className={getRoleBadgeClass(user.role)}>{user.role}</span>
-              </td>
+      {isLoading ? (
+        <p style={{ color: '#94a3b8', fontSize: '0.875rem' }}>Loading users...</p>
+      ) : error ? (
+        <p style={{ color: '#ef4444', fontSize: '0.875rem' }}>Failed to load users. Make sure you are logged in as admin.</p>
+      ) : (data?.length ?? 0) > 0 ? (
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>Phone</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Joined</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {data?.map((user) => (
+              <tr key={user.id}>
+                <td>{user.phoneNumber}</td>
+                <td>
+                  <span className={getRoleBadgeClass(user.role)}>
+                    {user.role || 'Unassigned'}
+                  </span>
+                </td>
+                <td style={{ textTransform: 'capitalize' }}>{user.status}</td>
+                <td>{new Date(user.createdAt).toLocaleDateString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <div style={{
+          background: '#ffffff', borderRadius: 8, padding: '40px 24px',
+          border: '1px solid #e2e8f0', textAlign: 'center',
+        }}>
+          <p style={{ color: '#94a3b8', fontSize: '0.875rem', margin: 0 }}>No users found</p>
+        </div>
+      )}
     </div>
   );
 }
