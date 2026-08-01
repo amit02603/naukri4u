@@ -539,7 +539,239 @@ Recruiter updates candidate application status (`applied` ➔ `shortlisted` / `r
 
 ---
 
-## 🛠️ SECTION 5: ERROR HANDLING & RESPONSES
+## ⚙️ SECTION 5: ADMIN MANAGEMENT, MANUAL ENTRY & ANALYTICS
+
+### 5.1 Admin Manual Entry — Create Employee
+Admin manually registers a new candidate account & profile.
+
+- **Endpoint**: `POST /admin/employees`
+- **Authentication**: Protected (`Bearer <accessToken>`, Role: `admin`)
+
+#### Request Body:
+```json
+{
+  "phoneNumber": "+919876543210",
+  "name": "Amit Mundra",
+  "skills": "React, Node.js, MongoDB",
+  "experience": "2 Years"
+}
+```
+
+#### Success Response (`201 Created`):
+```json
+{
+  "success": true,
+  "message": "Employee created successfully",
+  "data": {
+    "user": {
+      "id": "66b3f9d8...",
+      "phoneNumber": "+919876543210",
+      "role": "employee",
+      "status": "active",
+      "isProfileCompleted": true
+    },
+    "profile": {
+      "id": "6702c4d5...",
+      "name": "Amit Mundra",
+      "skills": "React, Node.js, MongoDB",
+      "experience": "2 Years"
+    }
+  }
+}
+```
+
+---
+
+### 5.2 Admin Manual Entry — Create Recruiter
+Admin manually registers a new recruiter account & company profile.
+
+- **Endpoint**: `POST /admin/recruiters`
+- **Authentication**: Protected (`Bearer <accessToken>`, Role: `admin`)
+
+#### Request Body:
+```json
+{
+  "phoneNumber": "+919988776655",
+  "name": "Rahul Sharma",
+  "company": "Arohar Technologies",
+  "designation": "HR Lead"
+}
+```
+
+#### Success Response (`201 Created`):
+```json
+{
+  "success": true,
+  "message": "Recruiter created successfully",
+  "data": {
+    "user": {
+      "id": "66b3f9d8...",
+      "phoneNumber": "+919988776655",
+      "role": "employer",
+      "status": "active",
+      "isProfileCompleted": true
+    },
+    "profile": {
+      "id": "6701a2b3...",
+      "name": "Rahul Sharma",
+      "company": "Arohar Technologies",
+      "designation": "HR Lead"
+    }
+  }
+}
+```
+
+---
+
+### 5.3 Admin Edit Employee Details
+- **Endpoint**: `PUT /admin/employees/:id`
+- **Authentication**: Protected (`Bearer <accessToken>`, Role: `admin`)
+
+#### Request Body:
+```json
+{
+  "name": "Amit Mundra",
+  "phone": "+919876543210",
+  "skills": "TypeScript, React, Express, MongoDB",
+  "experience": "3 Years"
+}
+```
+
+#### Success Response (`200 OK`):
+```json
+{
+  "success": true,
+  "message": "Employee profile updated successfully",
+  "data": { ... }
+}
+```
+
+---
+
+### 5.4 Admin Edit Recruiter & Company Details
+- **Endpoint**: `PUT /admin/recruiters/:id`
+- **Authentication**: Protected (`Bearer <accessToken>`, Role: `admin`)
+
+#### Request Body:
+```json
+{
+  "name": "Rahul Sharma",
+  "company": "Arohar Enterprise Solutions",
+  "designation": "VP of Talent Acquisition"
+}
+```
+
+#### Success Response (`200 OK`):
+```json
+{
+  "success": true,
+  "message": "Recruiter profile updated successfully",
+  "data": { ... }
+}
+```
+
+---
+
+### 5.5 Admin Block / Unblock / Delete User Account
+- **Endpoint**: `PATCH /admin/users/:id/status`
+- **Authentication**: Protected (`Bearer <accessToken>`, Role: `admin`)
+
+#### Request Body:
+```json
+{
+  "status": "blocked"
+}
+```
+*(Valid statuses: `"active"`, `"blocked"`, `"deleted"`)*
+
+#### Success Response (`200 OK`):
+```json
+{
+  "success": true,
+  "message": "User status updated successfully",
+  "data": { ... }
+}
+```
+
+---
+
+### 5.6 Admin Soft-Delete User
+- **Endpoint**: `DELETE /admin/users/:id`
+- **Authentication**: Protected (`Bearer <accessToken>`, Role: `admin`)
+
+#### Success Response (`200 OK`):
+```json
+{
+  "success": true,
+  "message": "User deleted successfully",
+  "data": null
+}
+```
+
+---
+
+### 5.7 Admin Job Posting Status Moderation
+- **Endpoint**: `PATCH /admin/jobs/:id/status`
+- **Authentication**: Protected (`Bearer <accessToken>`, Role: `admin`)
+
+#### Request Body:
+```json
+{
+  "status": "active"
+}
+```
+*(Valid statuses: `"active"`, `"pending"`, `"closed"`)*
+
+#### Success Response (`200 OK`):
+```json
+{
+  "success": true,
+  "message": "Job status updated successfully",
+  "data": { ... }
+}
+```
+
+---
+
+### 5.8 Admin Comprehensive Analytics Report
+- **Endpoint**: `GET /admin/analytics`
+- **Authentication**: Protected (`Bearer <accessToken>`, Role: `admin`)
+
+#### Success Response (`200 OK`):
+```json
+{
+  "success": true,
+  "message": "Comprehensive analytics fetched successfully",
+  "data": {
+    "overview": {
+      "totalRegistrations": 120,
+      "activeUsers": 115,
+      "totalRecruiters": 35,
+      "totalEmployees": 85
+    },
+    "growth": {
+      "employeeTrend": [ { "month": "Jan", "count": 10 }, { "month": "Feb", "count": 18 } ],
+      "jobTrend": [ { "month": "Jan", "count": 5 }, { "month": "Feb", "count": 12 } ]
+    },
+    "dailyActivity": [
+      { "date": "Aug 1", "activeUsers": 45, "applications": 12 }
+    ],
+    "jobStats": [
+      { "status": "active", "count": 28 },
+      { "status": "closed", "count": 4 }
+    ],
+    "applicationStats": [
+      { "status": "applied", "count": 65 },
+      { "status": "shortlisted", "count": 14 },
+      { "status": "hired", "count": 8 }
+    ]
+  }
+}
+```
+
+---
+
+## 🛠️ SECTION 6: ERROR HANDLING & RESPONSES
 
 All API error responses follow a standard unified format:
 
@@ -580,3 +812,4 @@ All API error responses follow a standard unified format:
   "message": "Job posting not found"
 }
 ```
+

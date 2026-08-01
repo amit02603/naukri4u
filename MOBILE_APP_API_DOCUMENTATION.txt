@@ -455,7 +455,207 @@ Response (200 OK):
 
 
 ================================================================================
-SECTION 5: STANDARD ERROR RESPONSES
+SECTION 5: ADMIN MANAGEMENT, MANUAL ENTRY & ANALYTICS
+================================================================================
+
+5.1 ADMIN MANUAL ENTRY — CREATE EMPLOYEE
+-----------------------------------------
+Endpoint:       POST /admin/employees
+Authentication: Protected (Bearer <accessToken>, Role: "admin")
+
+Request Body:
+{
+  "phoneNumber": "+919876543210",
+  "name": "Amit Mundra",
+  "skills": "React, Node.js, MongoDB",
+  "experience": "2 Years"
+}
+
+Response (201 Created):
+{
+  "success": true,
+  "message": "Employee created successfully",
+  "data": {
+    "user": {
+      "id": "66b3f9d8...",
+      "phoneNumber": "+919876543210",
+      "role": "employee",
+      "status": "active",
+      "isProfileCompleted": true
+    },
+    "profile": {
+      "id": "6702c4d5...",
+      "name": "Amit Mundra",
+      "skills": "React, Node.js, MongoDB",
+      "experience": "2 Years"
+    }
+  }
+}
+
+
+5.2 ADMIN MANUAL ENTRY — CREATE RECRUITER
+------------------------------------------
+Endpoint:       POST /admin/recruiters
+Authentication: Protected (Bearer <accessToken>, Role: "admin")
+
+Request Body:
+{
+  "phoneNumber": "+919988776655",
+  "name": "Rahul Sharma",
+  "company": "Arohar Technologies",
+  "designation": "HR Lead"
+}
+
+Response (201 Created):
+{
+  "success": true,
+  "message": "Recruiter created successfully",
+  "data": {
+    "user": {
+      "id": "66b3f9d8...",
+      "phoneNumber": "+919988776655",
+      "role": "employer",
+      "status": "active",
+      "isProfileCompleted": true
+    },
+    "profile": {
+      "id": "6701a2b3...",
+      "name": "Rahul Sharma",
+      "company": "Arohar Technologies",
+      "designation": "HR Lead"
+    }
+  }
+}
+
+
+5.3 ADMIN EDIT EMPLOYEE DETAILS
+--------------------------------
+Endpoint:       PUT /admin/employees/:id
+Authentication: Protected (Bearer <accessToken>, Role: "admin")
+
+Request Body:
+{
+  "name": "Amit Mundra",
+  "phone": "+919876543210",
+  "skills": "TypeScript, React, Express, MongoDB",
+  "experience": "3 Years"
+}
+
+Response (200 OK):
+{
+  "success": true,
+  "message": "Employee profile updated successfully",
+  "data": { ... }
+}
+
+
+5.4 ADMIN EDIT RECRUITER & COMPANY DETAILS
+-------------------------------------------
+Endpoint:       PUT /admin/recruiters/:id
+Authentication: Protected (Bearer <accessToken>, Role: "admin")
+
+Request Body:
+{
+  "name": "Rahul Sharma",
+  "company": "Arohar Enterprise Solutions",
+  "designation": "VP of Talent Acquisition"
+}
+
+Response (200 OK):
+{
+  "success": true,
+  "message": "Recruiter profile updated successfully",
+  "data": { ... }
+}
+
+
+5.5 ADMIN BLOCK / UNBLOCK / DELETE USER ACCOUNT
+------------------------------------------------
+Endpoint:       PATCH /admin/users/:id/status
+Authentication: Protected (Bearer <accessToken>, Role: "admin")
+
+Request Body:
+{
+  "status": "blocked"   // Options: "active", "blocked", "deleted"
+}
+
+Response (200 OK):
+{
+  "success": true,
+  "message": "User status updated successfully",
+  "data": { ... }
+}
+
+
+5.6 ADMIN SOFT-DELETE USER
+---------------------------
+Endpoint:       DELETE /admin/users/:id
+Authentication: Protected (Bearer <accessToken>, Role: "admin")
+
+Response (200 OK):
+{
+  "success": true,
+  "message": "User deleted successfully",
+  "data": null
+}
+
+
+5.7 ADMIN JOB POSTING STATUS MODERATION
+----------------------------------------
+Endpoint:       PATCH /admin/jobs/:id/status
+Authentication: Protected (Bearer <accessToken>, Role: "admin")
+
+Request Body:
+{
+  "status": "active"   // Options: "active", "pending", "closed"
+}
+
+Response (200 OK):
+{
+  "success": true,
+  "message": "Job status updated successfully",
+  "data": { ... }
+}
+
+
+5.8 ADMIN COMPREHENSIVE ANALYTICS REPORT
+-----------------------------------------
+Endpoint:       GET /admin/analytics
+Authentication: Protected (Bearer <accessToken>, Role: "admin")
+
+Response (200 OK):
+{
+  "success": true,
+  "message": "Comprehensive analytics fetched successfully",
+  "data": {
+    "overview": {
+      "totalRegistrations": 120,
+      "activeUsers": 115,
+      "totalRecruiters": 35,
+      "totalEmployees": 85
+    },
+    "growth": {
+      "employeeTrend": [ { "month": "Jan", "count": 10 }, { "month": "Feb", "count": 18 } ],
+      "jobTrend": [ { "month": "Jan", "count": 5 }, { "month": "Feb", "count": 12 } ]
+    },
+    "dailyActivity": [
+      { "date": "Aug 1", "activeUsers": 45, "applications": 12 }
+    ],
+    "jobStats": [
+      { "status": "active", "count": 28 },
+      { "status": "closed", "count": 4 }
+    ],
+    "applicationStats": [
+      { "status": "applied", "count": 65 },
+      { "status": "shortlisted", "count": 14 },
+      { "status": "hired", "count": 8 }
+    ]
+  }
+}
+
+
+================================================================================
+SECTION 6: STANDARD ERROR RESPONSES
 ================================================================================
 
 400 BAD REQUEST / VALIDATION FAILURE:
@@ -487,3 +687,4 @@ SECTION 5: STANDARD ERROR RESPONSES
   "success": false,
   "message": "Job posting not found"
 }
+
