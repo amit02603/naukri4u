@@ -2,6 +2,9 @@ import { Router } from 'express';
 import authRoutes from './auth.routes';
 import healthRoutes from './health.routes';
 import adminRoutes from './admin.routes';
+import profileRoutes from './profile.routes';
+import jobRoutes from './job.routes';
+import applicationRoutes from './application.routes';
 
 /**
  * V1 route aggregator.
@@ -14,5 +17,8 @@ const router = Router();
 router.use('/auth', authRoutes);
 router.use('/health', healthRoutes);
 router.use('/admin', adminRoutes);
+router.use('/', profileRoutes);
+router.use('/jobs', jobRoutes);
+router.use('/applications', applicationRoutes);
 
 export default router;

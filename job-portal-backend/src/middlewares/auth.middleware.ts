@@ -13,11 +13,11 @@ import { logger } from '../config/logger';
  *
  * If the token is missing, expired, or invalid, returns 401.
  */
-export const authenticate = (
+export const authenticate = async (
   req: IAuthenticatedRequest,
   _res: Response,
   next: NextFunction,
-): void => {
+): Promise<void> => {
   try {
     const authHeader = req.headers.authorization;
 
@@ -33,11 +33,25 @@ export const authenticate = (
 
     const decoded = TokenHelper.verifyAccessToken(token);
     const rawRole = decoded.role as unknown;
-    const roleString = Array.isArray(rawRole)
+    let roleString = Array.isArray(rawRole)
       ? rawRole[0] || ''
       : typeof rawRole === 'string'
       ? rawRole
       : '';
+
+    // If role in token is empty, fetch fresh user from database
+    if (!roleString && decoded.userId) {
+      const userRepository = new (require('../repositories/user.repository').UserRepository)();
+      const dbUser = await userRepository.findById(decoded.userId);
+      if (dbUser && dbUser.role) {
+        const dbRawRole = dbUser.role as unknown;
+        roleString = Array.isArray(dbRawRole)
+          ? dbRawRole[0] || ''
+          : typeof dbRawRole === 'string'
+          ? dbRawRole
+          : '';
+      }
+    }
 
     // Attach user payload with resolved permissions to the request
     req.user = {

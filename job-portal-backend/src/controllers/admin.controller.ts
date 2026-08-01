@@ -174,4 +174,62 @@ export class AdminController {
       next(error);
     }
   }
+
+  /**
+   * PATCH /admin/users/:id/status
+   * Updates user account status (active/blocked/deleted).
+   */
+  static async updateUserStatus(req: IAuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      const { status } = req.body;
+      const targetId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+      const user = await adminService.updateUserStatus(targetId, status);
+      res.status(200).json({
+        success: true,
+        message: 'User status updated successfully',
+        data: user,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * PATCH /admin/users/:id/role
+   * Updates user role.
+   */
+  static async updateUserRole(req: IAuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      const { role } = req.body;
+      const targetId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+      const user = await adminService.updateUserRole(targetId, role);
+      res.status(200).json({
+        success: true,
+        message: 'User role updated successfully',
+        data: user,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * PATCH /admin/jobs/:id/status
+   * Updates job status (active/pending/closed).
+   */
+  static async updateJobStatus(req: IAuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      const { status } = req.body;
+      const targetId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+      const job = await adminService.updateJobStatus(targetId, status);
+      res.status(200).json({
+        success: true,
+        message: 'Job status updated successfully',
+        data: job,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
+

@@ -28,4 +28,9 @@ router.get('/employees', AdminController.listEmployees);
 router.get('/jobs', AdminController.listJobs);
 router.get('/applications', AdminController.listApplications);
 
+// Admin Moderation Controls
+router.patch('/users/:id/status', AdminController.updateUserStatus);
+router.patch('/users/:id/role', AdminController.updateUserRole);
+router.patch('/jobs/:id/status', AdminController.updateJobStatus);
+
 export default router;

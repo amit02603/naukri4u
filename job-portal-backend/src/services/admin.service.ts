@@ -155,6 +155,45 @@ export class AdminService {
   }
 
   /**
+   * Admin moderation: Updates user account status (active / blocked / deleted).
+   */
+  async updateUserStatus(userId: string, status: string) {
+    const user = await userRepo.findById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    const updated = await userRepo.updateUser(userId, { status: status as unknown as import('../interfaces/user.interface').UserStatus });
+    logger.info('Admin updated user status', { userId, status });
+    return updated;
+  }
+
+  /**
+   * Admin moderation: Updates user role.
+   */
+  async updateUserRole(userId: string, role: string) {
+    const user = await userRepo.findById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    const updated = await userRepo.updateUser(userId, { role: role as unknown as import('../interfaces/user.interface').UserRole });
+    logger.info('Admin updated user role', { userId, role });
+    return updated;
+  }
+
+  /**
+   * Admin moderation: Updates job listing status (active / pending / closed).
+   */
+  async updateJobStatus(jobId: string, status: string) {
+    const job = await jobRepo.findById(jobId);
+    if (!job) {
+      throw new Error('Job not found');
+    }
+    const updated = await jobRepo.updateById(jobId, { $set: { status } });
+    logger.info('Admin updated job status', { jobId, status });
+    return updated;
+  }
+
+  /**
    * Fills in missing months with zero counts for chart continuity.
    */
   private fillMonthlyTrend(
