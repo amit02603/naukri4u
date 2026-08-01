@@ -4,6 +4,9 @@ import { TokenHelper } from '../helpers/token.helper';
 import { ApiError } from '../utils/ApiError';
 import { getPermissionsForRole } from '../constants/permissions';
 import { logger } from '../config/logger';
+import { UserRepository } from '../repositories/user.repository';
+
+const userRepo = new UserRepository();
 
 /**
  * JWT Authentication middleware.
@@ -39,10 +42,9 @@ export const authenticate = async (
       ? rawRole
       : '';
 
-    // If role in token is empty, fetch fresh user from database
-    if (!roleString && decoded.userId) {
-      const userRepository = new (require('../repositories/user.repository').UserRepository)();
-      const dbUser = await userRepository.findById(decoded.userId);
+    // Always fetch fresh user from DB to ensure instant role updates
+    if (decoded.userId) {
+      const dbUser = await userRepo.findById(decoded.userId);
       if (dbUser && dbUser.role) {
         const dbRawRole = dbUser.role as unknown;
         roleString = Array.isArray(dbRawRole)

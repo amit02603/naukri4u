@@ -1,0 +1,489 @@
+================================================================================
+                       NAUKRI4U — MOBILE APP API DOCUMENTATION
+================================================================================
+
+BASE SERVER URLs:
+-----------------
+Production Server: https://naukri4u-backend.onrender.com/api/v1
+Local Dev Server:  http://localhost:5000/api/v1
+
+AUTHENTICATION HEADER:
+----------------------
+For all protected endpoints, pass the JWT access token in HTTP header:
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+
+
+================================================================================
+SECTION 1: AUTHENTICATION FLOW
+================================================================================
+
+1.1 LOGIN WITH FIREBASE OTP TOKEN
+----------------------------------
+Endpoint:       POST /auth/login
+Authentication: Public (No token needed)
+
+Request Body:
+{
+  "firebaseIdToken": "eyJhbGciOiJSUzI1NiIs...",
+  "deviceToken": "fcm_device_token_optional"
+}
+
+Response (200 OK):
+{
+  "success": true,
+  "message": "Login successful",
+  "data": {
+    "user": {
+      "id": "66b3f9d8...",
+      "firebaseUid": "Gj0R3iCNj3M...",
+      "phoneNumber": "+919988776655",
+      "role": "employer",
+      "status": "active",
+      "isProfileCompleted": true,
+      "lastLogin": "2026-08-01T14:30:00.000Z"
+    },
+    "accessToken": "eyJhbGciOiJIUzI1NiIs...",
+    "refreshToken": "c61b626e-48a0-4a81-9b1b-..."
+  }
+}
+
+
+1.2 REFRESH ACCESS TOKEN
+-------------------------
+Endpoint:       POST /auth/refresh
+Authentication: Public
+
+Request Body:
+{
+  "refreshToken": "c61b626e-48a0-4a81-9b1b-..."
+}
+
+Response (200 OK):
+{
+  "success": true,
+  "message": "Token refreshed successfully",
+  "data": {
+    "accessToken": "eyJhbGciOiJIUzI1NiIs...",
+    "refreshToken": "e72c737f-59b1-5b92-0c2c-..."
+  }
+}
+
+
+1.3 LOGOUT
+----------
+Endpoint:       POST /auth/logout
+Authentication: Protected (Bearer <accessToken>)
+
+Request Body:
+{
+  "refreshToken": "e72c737f-59b1-5b92-0c2c-..."
+}
+
+Response (200 OK):
+{
+  "success": true,
+  "message": "Logged out successfully"
+}
+
+
+1.4 GET CURRENT USER PROFILE
+----------------------------
+Endpoint:       GET /auth/me
+Authentication: Protected (Bearer <accessToken>)
+
+Response (200 OK):
+{
+  "success": true,
+  "message": "User profile fetched successfully",
+  "data": {
+    "id": "66b3f9d8...",
+    "firebaseUid": "Gj0R3iCNj3M...",
+    "phoneNumber": "+919988776655",
+    "role": "employee",
+    "status": "active",
+    "isProfileCompleted": true
+  }
+}
+
+
+================================================================================
+SECTION 2: ROLE SELECTION & PROFILES
+================================================================================
+
+2.1 SELECT USER ROLE (Employer vs Employee)
+--------------------------------------------
+Endpoint:       POST /users/role
+Authentication: Protected (Bearer <accessToken>)
+
+Request Body:
+{
+  "role": "employer"   // Options: "employer" or "employee"
+}
+
+Response (200 OK):
+{
+  "success": true,
+  "message": "Role updated successfully",
+  "data": {
+    "id": "66b3f9d8...",
+    "phoneNumber": "+919988776655",
+    "role": "employer",
+    "isProfileCompleted": false
+  }
+}
+
+
+2.2 GET MY PROFILE
+-------------------
+Endpoint:       GET /profiles/me
+Authentication: Protected (Bearer <accessToken>)
+
+Response (200 OK):
+{
+  "success": true,
+  "message": "Profile fetched successfully",
+  "data": {
+    "user": {
+      "id": "66b3f9d8...",
+      "phoneNumber": "+919988776655",
+      "role": "employer",
+      "isProfileCompleted": true
+    },
+    "profile": {
+      "id": "6701a2b3...",
+      "userId": "66b3f9d8...",
+      "name": "Rahul Sharma",
+      "company": "Arohar Technologies",
+      "designation": "HR Lead"
+    }
+  }
+}
+
+
+2.3 SAVE / UPDATE EMPLOYER (RECRUITER) PROFILE
+-----------------------------------------------
+Endpoint:       PUT /profiles/employer
+Authentication: Protected (Bearer <accessToken>, Role: "employer" or "admin")
+
+Request Body:
+{
+  "name": "Rahul Sharma",
+  "company": "Arohar Technologies",
+  "designation": "Talent Acquisition Lead"
+}
+
+Response (200 OK):
+{
+  "success": true,
+  "message": "Employer profile saved successfully",
+  "data": {
+    "id": "6701a2b3...",
+    "userId": "66b3f9d8...",
+    "name": "Rahul Sharma",
+    "company": "Arohar Technologies",
+    "designation": "Talent Acquisition Lead"
+  }
+}
+
+
+2.4 SAVE / UPDATE EMPLOYEE (CANDIDATE) PROFILE
+-----------------------------------------------
+Endpoint:       PUT /profiles/employee
+Authentication: Protected (Bearer <accessToken>, Role: "employee" or "admin")
+
+Request Body:
+{
+  "name": "amit mundra",
+  "phone": "7668942630",
+  "skills": "React, Node.js, MongoDB, TypeScript",
+  "experience": "3 Years",
+  "resumeUrl": "https://storage.naukri4u.com/resumes/amit_resume.pdf"
+}
+
+Response (200 OK):
+{
+  "success": true,
+  "message": "Employee profile saved successfully",
+  "data": {
+    "id": "6702c4d5...",
+    "userId": "66b3f9d8...",
+    "name": "amit mundra",
+    "phone": "7668942630",
+    "skills": "React, Node.js, MongoDB, TypeScript",
+    "experience": "3 Years",
+    "resumeUrl": "https://storage.naukri4u.com/resumes/amit_resume.pdf"
+  }
+}
+
+
+================================================================================
+SECTION 3: JOB POSTINGS & SEARCH
+================================================================================
+
+3.1 SEARCH & LIST JOBS
+-----------------------
+Endpoint:       GET /jobs
+Authentication: Public or Protected (Optional)
+Query Params:   page=1&limit=20&search=Developer&status=active&company=Arohar
+
+Response (200 OK):
+{
+  "success": true,
+  "message": "Jobs fetched successfully",
+  "data": [
+    {
+      "id": "6703e5f6...",
+      "title": ".NET Developer",
+      "company": "Arohar Technologies",
+      "location": "Noida / Remote",
+      "description": "We are hiring a Senior .NET Core Developer...",
+      "salary": "8 - 12 LPA",
+      "status": "active",
+      "postedBy": "66b3f9d8...",
+      "createdAt": "2026-08-01T10:00:00.000Z"
+    }
+  ],
+  "meta": {
+    "page": 1,
+    "limit": 20,
+    "total": 1,
+    "totalPages": 1,
+    "hasNextPage": false,
+    "hasPrevPage": false
+  }
+}
+
+
+3.2 GET JOB DETAILS BY ID
+--------------------------
+Endpoint:       GET /jobs/:id
+Authentication: Public or Protected (Optional)
+
+Response (200 OK):
+{
+  "success": true,
+  "message": "Job details fetched successfully",
+  "data": {
+    "id": "6703e5f6...",
+    "title": ".NET Developer",
+    "company": "Arohar Technologies",
+    "location": "Noida / Remote",
+    "description": "We are hiring a Senior .NET Core Developer...",
+    "salary": "8 - 12 LPA",
+    "status": "active",
+    "postedBy": "66b3f9d8...",
+    "createdAt": "2026-08-01T10:00:00.000Z"
+  }
+}
+
+
+3.3 CREATE JOB POSTING
+-----------------------
+Endpoint:       POST /jobs
+Authentication: Protected (Bearer <accessToken>, Role: "employer" or "admin")
+
+Request Body:
+{
+  "title": "Full Stack Developer",
+  "company": "TechSoft Solutions",
+  "location": "Bangalore",
+  "description": "Looking for Full Stack MERN engineer with 2+ yrs exp...",
+  "salary": "10 - 15 LPA",
+  "status": "active"
+}
+
+Response (201 Created):
+{
+  "success": true,
+  "message": "Job posting created successfully",
+  "data": {
+    "id": "6704f6a7...",
+    "title": "Full Stack Developer",
+    "company": "TechSoft Solutions",
+    "location": "Bangalore",
+    "description": "Looking for Full Stack MERN engineer with 2+ yrs exp...",
+    "salary": "10 - 15 LPA",
+    "status": "active",
+    "postedBy": "66b3f9d8...",
+    "createdAt": "2026-08-01T14:45:00.000Z"
+  }
+}
+
+
+3.4 UPDATE JOB POSTING
+-----------------------
+Endpoint:       PUT /jobs/:id
+Authentication: Protected (Bearer <accessToken>, Role: Job Owner or "admin")
+
+Request Body:
+{
+  "title": "Senior Full Stack Developer",
+  "salary": "12 - 18 LPA",
+  "status": "active"
+}
+
+Response (200 OK):
+{
+  "success": true,
+  "message": "Job posting updated successfully",
+  "data": { ... }
+}
+
+
+3.5 DELETE JOB POSTING
+-----------------------
+Endpoint:       DELETE /jobs/:id
+Authentication: Protected (Bearer <accessToken>, Role: Job Owner or "admin")
+
+Response (200 OK):
+{
+  "success": true,
+  "message": "Job posting deleted successfully",
+  "data": null
+}
+
+
+================================================================================
+SECTION 4: JOB APPLICATIONS WORKFLOW
+================================================================================
+
+4.1 APPLY TO A JOB (Candidate)
+-------------------------------
+Endpoint:       POST /applications
+Authentication: Protected (Bearer <accessToken>, Role: "employee" or "admin")
+
+Request Body:
+{
+  "jobId": "6703e5f6...",
+  "resumeUrl": "https://storage.naukri4u.com/resumes/amit_resume.pdf"
+}
+
+Response (201 Created):
+{
+  "success": true,
+  "message": "Application submitted successfully",
+  "data": {
+    "id": "6705a7b8...",
+    "applicant": "66b3f9d8...",
+    "job": "6703e5f6...",
+    "status": "applied",
+    "resumeUrl": "https://storage.naukri4u.com/resumes/amit_resume.pdf",
+    "createdAt": "2026-08-01T14:50:00.000Z"
+  }
+}
+
+
+4.2 VIEW MY APPLICATIONS (Candidate History)
+---------------------------------------------
+Endpoint:       GET /applications/my
+Authentication: Protected (Bearer <accessToken>, Role: "employee" or "admin")
+Query Params:   page=1&limit=20
+
+Response (200 OK):
+{
+  "success": true,
+  "message": "Applications fetched successfully",
+  "data": [
+    {
+      "id": "6705a7b8...",
+      "job": {
+        "id": "6703e5f6...",
+        "title": ".NET Developer",
+        "company": "Arohar Technologies",
+        "location": "Noida / Remote"
+      },
+      "status": "shortlisted",
+      "resumeUrl": "https://storage.naukri4u.com/resumes/amit_resume.pdf",
+      "createdAt": "2026-08-01T14:50:00.000Z"
+    }
+  ],
+  "meta": {
+    "page": 1,
+    "limit": 20,
+    "total": 1,
+    "totalPages": 1,
+    "hasNextPage": false,
+    "hasPrevPage": false
+  }
+}
+
+
+4.3 VIEW APPLICANTS FOR A JOB (Recruiter)
+------------------------------------------
+Endpoint:       GET /applications/jobs/:jobId
+Authentication: Protected (Bearer <accessToken>, Role: Job Owner or "admin")
+
+Response (200 OK):
+{
+  "success": true,
+  "message": "Job applications fetched successfully",
+  "data": [
+    {
+      "id": "6705a7b8...",
+      "applicant": {
+        "id": "66b3f9d8...",
+        "phoneNumber": "+917668942630"
+      },
+      "status": "applied",
+      "resumeUrl": "https://storage.naukri4u.com/resumes/amit_resume.pdf",
+      "createdAt": "2026-08-01T14:50:00.000Z"
+    }
+  ]
+}
+
+
+4.4 UPDATE CANDIDATE APPLICATION STATUS (Recruiter)
+----------------------------------------------------
+Endpoint:       PATCH /applications/:id/status
+Authentication: Protected (Bearer <accessToken>, Role: Job Owner or "admin")
+
+Request Body:
+{
+  "status": "shortlisted"   // Options: "applied", "shortlisted", "rejected", "hired"
+}
+
+Response (200 OK):
+{
+  "success": true,
+  "message": "Application status updated successfully",
+  "data": {
+    "id": "6705a7b8...",
+    "status": "shortlisted"
+  }
+}
+
+
+================================================================================
+SECTION 5: STANDARD ERROR RESPONSES
+================================================================================
+
+400 BAD REQUEST / VALIDATION FAILURE:
+{
+  "success": false,
+  "message": "Validation failed",
+  "errors": [
+    {
+      "field": "title",
+      "message": "Job title is required"
+    }
+  ]
+}
+
+401 UNAUTHORIZED:
+{
+  "success": false,
+  "message": "Access token is required"
+}
+
+403 FORBIDDEN:
+{
+  "success": false,
+  "message": "Access denied. Required role: employer or admin. Your role: employee"
+}
+
+404 NOT FOUND:
+{
+  "success": false,
+  "message": "Job posting not found"
+}
