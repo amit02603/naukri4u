@@ -67,6 +67,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { label: 'Employees', href: ROUTES.EMPLOYEES },
     { label: 'Jobs', href: ROUTES.JOBS },
     { label: 'Applications', href: ROUTES.APPLICATIONS },
+    { label: 'Analytics', href: ROUTES.ANALYTICS },
   ];
 
   const isActive = (href: string) => {

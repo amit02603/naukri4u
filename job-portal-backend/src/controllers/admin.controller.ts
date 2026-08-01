@@ -231,5 +231,110 @@ export class AdminController {
       next(error);
     }
   }
+
+  /**
+   * POST /admin/employees
+   * Admin manually registers an Employee.
+   */
+  static async createEmployee(req: IAuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      const result = await adminService.createManualEmployee(req.body);
+      res.status(201).json({
+        success: true,
+        message: 'Employee created successfully',
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * POST /admin/recruiters
+   * Admin manually registers a Recruiter.
+   */
+  static async createRecruiter(req: IAuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      const result = await adminService.createManualRecruiter(req.body);
+      res.status(201).json({
+        success: true,
+        message: 'Recruiter created successfully',
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * PUT /admin/employees/:id
+   * Admin updates Employee profile.
+   */
+  static async updateEmployee(req: IAuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      const targetId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+      const updated = await adminService.updateEmployeeProfile(targetId, req.body);
+      res.status(200).json({
+        success: true,
+        message: 'Employee profile updated successfully',
+        data: updated,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * PUT /admin/recruiters/:id
+   * Admin updates Recruiter profile.
+   */
+  static async updateRecruiter(req: IAuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      const targetId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+      const updated = await adminService.updateRecruiterProfile(targetId, req.body);
+      res.status(200).json({
+        success: true,
+        message: 'Recruiter profile updated successfully',
+        data: updated,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * DELETE /admin/users/:id
+   * Admin soft-deletes a user account.
+   */
+  static async deleteUser(req: IAuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      const targetId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+      await adminService.deleteUser(targetId);
+      res.status(200).json({
+        success: true,
+        message: 'User deleted successfully',
+        data: null,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * GET /admin/analytics
+   * Returns comprehensive analytics data.
+   */
+  static async getAnalytics(req: IAuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      const analytics = await adminService.getComprehensiveAnalytics();
+      res.status(200).json({
+        success: true,
+        message: 'Comprehensive analytics fetched successfully',
+        data: analytics,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
