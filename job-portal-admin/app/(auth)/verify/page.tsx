@@ -106,33 +106,52 @@ export default function VerifyPage() {
   const isLoading = isVerifying || isAuthLoading;
 
   return (
-    <div className="glass-panel rounded-2xl p-8 shadow-2xl border border-slate-800">
-      
+    <div style={{
+      background: '#ffffff', borderRadius: 12, padding: '40px 36px',
+      border: '1px solid #e2e8f0', boxShadow: '0 4px 24px rgba(0,0,0,0.06)',
+    }}>
+
       {/* ─── Go Back Link ─── */}
       <Link
         href={ROUTES.LOGIN}
-        className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-400 hover:text-emerald-400 mb-6 transition-colors"
+        style={{
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          fontSize: '0.875rem', fontWeight: 500, color: '#64748b',
+          textDecoration: 'none', marginBottom: 24,
+          transition: 'color 0.15s ease',
+        }}
+        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = '#3b82f6'; }}
+        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = '#64748b'; }}
       >
         <ArrowLeft className="h-4 w-4" />
         Back to phone login
       </Link>
 
       {/* ─── Header ─── */}
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold tracking-tight text-slate-50">Verify Code</h2>
-        <p className="mt-2 text-sm text-slate-400">
-          We sent a 6-digit verification code to <span className="font-semibold text-slate-200">{phoneNumber || 'your device'}</span>.
+      <div style={{ marginBottom: 28 }}>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1e293b', margin: '0 0 8px' }}>
+          Verify Code
+        </h2>
+        <p style={{ fontSize: '0.875rem', color: '#64748b', margin: 0 }}>
+          We sent a 6-digit verification code to{' '}
+          <span style={{ fontWeight: 600, color: '#1e293b' }}>{phoneNumber || 'your device'}</span>.
         </p>
       </div>
 
       {/* ─── Form ─── */}
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         <div>
-          <label htmlFor="otp" className="block text-sm font-medium text-slate-300 mb-2">
+          <label htmlFor="otp" style={{
+            display: 'block', fontSize: '0.875rem', fontWeight: 500,
+            color: '#1e293b', marginBottom: 8,
+          }}>
             Verification Code (OTP)
           </label>
-          <div className="relative flex rounded-xl bg-slate-900 border border-slate-800 focus-within:border-emerald-500/50 focus-within:ring-2 focus-within:ring-emerald-500/20 transition-all">
-            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500">
+          <div style={{
+            position: 'relative', display: 'flex', borderRadius: 8,
+            border: '1px solid #e2e8f0', background: '#ffffff',
+          }}>
+            <span style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}>
               <KeyRound className="h-4.5 w-4.5" />
             </span>
             <input
@@ -144,13 +163,18 @@ export default function VerifyPage() {
               placeholder="000000"
               disabled={isLoading}
               {...register('otp')}
-              className="w-full bg-transparent py-3.5 pl-11 pr-4 text-center text-lg font-bold letter tracking-[0.3em] text-slate-100 placeholder-slate-700 focus:outline-none"
+              style={{
+                width: '100%', background: 'transparent',
+                padding: '14px 16px 14px 44px', textAlign: 'center',
+                fontSize: '1.125rem', fontWeight: 700, letterSpacing: '0.3em',
+                color: '#1e293b', border: 'none', outline: 'none',
+              }}
             />
           </div>
 
           {/* Validation errors */}
           {errors.otp && (
-            <p className="mt-2 text-xs text-rose-500 font-medium">
+            <p style={{ marginTop: 6, fontSize: '0.75rem', color: '#ef4444', fontWeight: 500 }}>
               {errors.otp.message}
             </p>
           )}
@@ -160,7 +184,18 @@ export default function VerifyPage() {
         <button
           type="submit"
           disabled={isLoading}
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-slate-950 shadow-[0_0_20px_rgba(16,185,129,0.25)] hover:bg-emerald-400 transition-all active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
+          style={{
+            display: 'flex', width: '100%', alignItems: 'center',
+            justifyContent: 'center', gap: 8, borderRadius: 8,
+            background: '#3b82f6', padding: '12px 16px',
+            fontSize: '0.875rem', fontWeight: 600, color: '#ffffff',
+            border: 'none', cursor: 'pointer',
+            transition: 'background 0.15s ease',
+            opacity: isLoading ? 0.6 : 1,
+            pointerEvents: isLoading ? 'none' : 'auto',
+          }}
+          onMouseEnter={(e) => { if (!isLoading) (e.currentTarget as HTMLElement).style.background = '#2563eb'; }}
+          onMouseLeave={(e) => { if (!isLoading) (e.currentTarget as HTMLElement).style.background = '#3b82f6'; }}
         >
           {isLoading ? (
             <>
@@ -172,14 +207,14 @@ export default function VerifyPage() {
           )}
         </button>
 
-        {/* ─── Resend timer trigger ─── */}
-        <div className="text-center text-sm text-slate-500">
+        {/* ─── Resend timer ─── */}
+        <div style={{ textAlign: 'center', fontSize: '0.875rem', color: '#64748b' }}>
           {resendCountdown > 0 ? (
-            <span>Resend code in <span className="font-semibold text-slate-400">{resendCountdown}s</span></span>
+            <span>Resend code in <span style={{ fontWeight: 600, color: '#1e293b' }}>{resendCountdown}s</span></span>
           ) : (
             <Link
               href={ROUTES.LOGIN}
-              className="font-semibold text-emerald-500 hover:text-emerald-400 transition-colors"
+              style={{ fontWeight: 600, color: '#3b82f6', textDecoration: 'none' }}
             >
               Resend Code
             </Link>

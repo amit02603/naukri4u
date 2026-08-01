@@ -135,27 +135,44 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="glass-panel rounded-2xl p-8 shadow-2xl border border-slate-800">
-      
+    <div style={{
+      background: '#ffffff', borderRadius: 12, padding: '40px 36px',
+      border: '1px solid #e2e8f0', boxShadow: '0 4px 24px rgba(0,0,0,0.06)',
+    }}>
+
       {/* ─── Header ─── */}
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold tracking-tight text-slate-50">Welcome back</h2>
-        <p className="mt-2 text-sm text-slate-400">
+      <div style={{ marginBottom: 28 }}>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1e293b', margin: '0 0 8px' }}>
+          Welcome back
+        </h2>
+        <p style={{ fontSize: '0.875rem', color: '#64748b', margin: 0 }}>
           Enter your phone number to receive a one-time OTP code.
         </p>
       </div>
 
       {/* ─── Form ─── */}
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         <div>
-          <label htmlFor="phoneNumber" className="block text-sm font-medium text-slate-300 mb-2">
+          <label htmlFor="phoneNumber" style={{
+            display: 'block', fontSize: '0.875rem', fontWeight: 500,
+            color: '#1e293b', marginBottom: 8,
+          }}>
             Phone Number
           </label>
-          <div className="relative flex rounded-xl bg-slate-900 border border-slate-800 focus-within:border-emerald-500/50 focus-within:ring-2 focus-within:ring-emerald-500/20 transition-all overflow-hidden">
-            {/* Country code selector prefix */}
+          <div style={{
+            display: 'flex', borderRadius: 8, overflow: 'hidden',
+            border: '1px solid #e2e8f0', background: '#ffffff',
+            transition: 'border-color 0.15s ease',
+          }}>
+            {/* Country code selector */}
             <select
               {...register('countryCode')}
-              className="px-3 bg-transparent border-r border-slate-800 text-slate-300 text-sm font-medium focus:outline-none cursor-pointer"
+              style={{
+                padding: '0 12px', background: '#f8fafc',
+                borderRight: '1px solid #e2e8f0', color: '#1e293b',
+                fontSize: '0.875rem', fontWeight: 500, border: 'none',
+                outline: 'none', cursor: 'pointer',
+              }}
             >
               <option value="+91">+91 (IN)</option>
               <option value="+1">+1 (US)</option>
@@ -165,8 +182,8 @@ export default function LoginPage() {
             </select>
 
             {/* Input field */}
-            <div className="relative flex-1 flex items-center">
-              <span className="absolute left-3 text-slate-500">
+            <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center' }}>
+              <span style={{ position: 'absolute', left: 12, color: '#94a3b8' }}>
                 <Phone className="h-4.5 w-4.5" />
               </span>
               <input
@@ -175,14 +192,18 @@ export default function LoginPage() {
                 placeholder="99887 76655"
                 disabled={isLoading}
                 {...register('phoneNumber')}
-                className="w-full bg-transparent py-3 pl-10 pr-4 text-sm text-slate-100 placeholder-slate-650 focus:outline-none"
+                style={{
+                  width: '100%', background: 'transparent',
+                  padding: '12px 16px 12px 40px', fontSize: '0.875rem',
+                  color: '#1e293b', border: 'none', outline: 'none',
+                }}
               />
             </div>
           </div>
 
           {/* Validation errors */}
           {errors.phoneNumber && (
-            <p className="mt-2 text-xs text-rose-500 font-medium">
+            <p style={{ marginTop: 6, fontSize: '0.75rem', color: '#ef4444', fontWeight: 500 }}>
               {errors.phoneNumber.message}
             </p>
           )}
@@ -195,7 +216,18 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={isLoading}
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-slate-950 shadow-[0_0_20px_rgba(16,185,129,0.25)] hover:bg-emerald-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500 transition-all active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
+          style={{
+            display: 'flex', width: '100%', alignItems: 'center',
+            justifyContent: 'center', gap: 8, borderRadius: 8,
+            background: '#3b82f6', padding: '12px 16px',
+            fontSize: '0.875rem', fontWeight: 600, color: '#ffffff',
+            border: 'none', cursor: 'pointer',
+            transition: 'background 0.15s ease',
+            opacity: isLoading ? 0.6 : 1,
+            pointerEvents: isLoading ? 'none' : 'auto',
+          }}
+          onMouseEnter={(e) => { if (!isLoading) (e.currentTarget as HTMLElement).style.background = '#2563eb'; }}
+          onMouseLeave={(e) => { if (!isLoading) (e.currentTarget as HTMLElement).style.background = '#3b82f6'; }}
         >
           {isLoading ? (
             <>
