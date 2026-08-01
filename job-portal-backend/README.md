@@ -1,6 +1,6 @@
 # Job Portal Backend
 
-Production-ready Job Portal Backend API built with Node.js, Express, TypeScript, and MongoDB.
+Job Portal Backend API built with Node.js, Express, TypeScript, and MongoDB.
 
 ## Architecture
 
