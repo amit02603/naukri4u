@@ -1,76 +1,122 @@
-# Job Portal Backend
+# ⚙️ Naukri4U — Job Portal Backend API
 
-Job Portal Backend API built with Node.js, Express, TypeScript, and MongoDB.
+![Node.js](https://img.shields.io/badge/Node.js-18%2B-green?style=for-the-badge&logo=node.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)
+![Express.js](https://img.shields.io/badge/Express.js-4.18-lightgrey?style=for-the-badge&logo=express)
+![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-green?style=for-the-badge&logo=mongodb)
+![Firebase](https://img.shields.io/badge/Firebase-Admin-yellow?style=for-the-badge&logo=firebase)
+![Swagger](https://img.shields.io/badge/Swagger-OpenAPI_3.0-brightgreen?style=for-the-badge&logo=swagger)
 
-## Architecture
+Production-ready REST API backend for the Naukri4U Job Portal platform, built with **Node.js, Express, TypeScript, MongoDB Atlas, and Firebase Admin SDK**.
+
+---
+
+## 🏛️ Clean Architecture
 
 ```
-Clean Architecture with Repository Pattern
-┌──────────────────────────────────────────────┐
-│  Routes → Controller → Service → Repository  │
-│              ↓                       ↓        │
-│         Middleware              Mongoose       │
-│              ↓                       ↓        │
-│       Validation            MongoDB Atlas     │
-└──────────────────────────────────────────────┘
+Routes ➔ Middleware ➔ Controller ➔ Service ➔ Repository ➔ Mongoose Models ➔ MongoDB Atlas
 ```
 
-- **Controllers**: Thin — extract request data, delegate to services, return responses
-- **Services**: Business logic — auth flows, validation rules, data transformations
-- **Repositories**: Data access — Mongoose queries, CRUD operations, soft-delete
-- **Middlewares**: Cross-cutting concerns — auth, RBAC, validation, rate limiting, logging
+- **Controllers**: Thin HTTP handlers — extract parameters, delegate to services, format JSON responses.
+- **Services**: Business logic layer — auth validation, profile upserts, manual entries, stats computation.
+- **Repositories**: Data access layer — Mongoose query execution, pagination, soft-deletes (`isDeleted: true`).
+- **Middlewares**: Cross-cutting concerns — Firebase token verification, real-time MongoDB role sync, RBAC, input validation chains, rate limiting.
 
-## Tech Stack
+---
+
+## ⚡ Tech Stack
 
 | Category | Technology |
 |---|---|
-| Runtime | Node.js 18+ |
-| Language | TypeScript (strict mode) |
-| Framework | Express.js |
-| Database | MongoDB Atlas (Mongoose 8) |
-| Auth | Firebase Admin SDK + JWT + Refresh Tokens |
-| Uploads | Cloudinary + Multer |
-| Logging | Winston + Morgan |
-| Docs | Swagger/OpenAPI 3.0 |
-| Testing | Jest + Supertest + MongoDB Memory Server |
-| Security | Helmet, CORS, Rate Limiting, XSS, NoSQL Injection |
+| Runtime | Node.js (v18+) |
+| Language | TypeScript (Strict mode) |
+| Web Framework | Express.js |
+| Database | MongoDB Atlas + Mongoose 8 |
+| Authentication | Firebase Admin SDK + JWT + Refresh Token Rotation |
+| File Storage | Cloudinary + Multer |
+| Logging | Winston Logger + Morgan HTTP Logger |
+| OpenAPI Docs | Swagger UI (`/api/docs`) |
+| Security | Helmet, CORS, Rate Limiting, XSS, NoSQL Injection protection |
 
-## Getting Started
+---
 
-### Prerequisites
+## 📋 Comprehensive API Endpoints
 
-- Node.js >= 18
-- npm >= 9
-- MongoDB Atlas account (or local MongoDB for development)
-- Firebase project with Phone Authentication enabled
+### 🔐 Authentication (`/api/v1/auth`)
+| Method | Endpoint | Description | Auth Required |
+|---|---|---|---|
+| `POST` | `/auth/login` | Login with Firebase ID token (returns JWT + Refresh Token) | No |
+| `POST` | `/auth/refresh` | Rotate refresh token for new access token | No |
+| `POST` | `/auth/logout` | Revoke user session & refresh token | Yes |
+| `GET` | `/auth/me` | Fetch currently authenticated user profile | Yes |
 
-### Installation
+### 👤 Roles & Profiles (`/api/v1`)
+| Method | Endpoint | Description | Auth Required |
+|---|---|---|---|
+| `POST` | `/users/role` | Select initial user role (`employer` or `employee`) | Yes |
+| `GET` | `/profiles/me` | Get current user's profile details | Yes |
+| `PUT` | `/profiles/employer` | Upsert employer company profile | Employer |
+| `PUT` | `/profiles/employee` | Upsert employee candidate profile | Employee |
+
+### 💼 Jobs (`/api/v1/jobs`)
+| Method | Endpoint | Description | Auth Required |
+|---|---|---|---|
+| `GET` | `/jobs` | Search & list jobs (with pagination & filters) | Public |
+| `GET` | `/jobs/:id` | Get job posting details by ID | Public |
+| `POST` | `/jobs` | Create a new job posting | Employer / Admin |
+| `PUT` | `/jobs/:id` | Update job posting | Employer / Admin |
+| `DELETE` | `/jobs/:id` | Soft-delete job posting | Employer / Admin |
+
+### 📝 Applications (`/api/v1/applications`)
+| Method | Endpoint | Description | Auth Required |
+|---|---|---|---|
+| `POST` | `/applications` | Apply for a job posting | Employee |
+| `GET` | `/applications/my` | View my submitted job applications | Employee |
+| `GET` | `/applications/jobs/:jobId` | View candidates who applied for a job | Employer / Admin |
+| `PATCH` | `/applications/:id/status` | Update candidate application status (`applied`, `shortlisted`, `rejected`, `hired`) | Employer / Admin |
+
+### ⚙️ Admin Console & Manual Entry (`/api/v1/admin`)
+| Method | Endpoint | Description | Auth Required |
+|---|---|---|---|
+| `GET` | `/admin/dashboard` | Aggregated dashboard stats & chart trends | Admin |
+| `GET` | `/admin/analytics` | Comprehensive platform analytics report | Admin |
+| `GET` | `/admin/users` | List all registered users (paginated) | Admin |
+| `GET` | `/admin/recruiters` | List all recruiter profiles (paginated) | Admin |
+| `GET` | `/admin/employees` | List all employee profiles (paginated) | Admin |
+| `POST` | `/admin/employees` | Manually onboard a new candidate | Admin |
+| `POST` | `/admin/recruiters` | Manually onboard a new recruiter + company | Admin |
+| `PUT` | `/admin/employees/:id` | Admin edit candidate profile | Admin |
+| `PUT` | `/admin/recruiters/:id` | Admin edit recruiter & company details | Admin |
+| `PATCH` | `/admin/users/:id/status` | Block, unblock, or activate user account | Admin |
+| `DELETE` | `/admin/users/:id` | Soft-delete user account | Admin |
+| `PATCH` | `/admin/jobs/:id/status` | Job posting moderation status update | Admin |
+
+---
+
+## ⚡ Getting Started
+
+### 1. Installation
 
 ```bash
-# Clone the repository
-git clone <repo-url> job-portal-backend
-cd job-portal-backend
-
-# Install dependencies
 npm install
-
-# Copy environment variables
-cp .env.example .env
-
-# Fill in your credentials in .env
-# See .env.example for documentation on each variable
 ```
 
-### Environment Variables
+### 2. Environment Configuration
 
-See [`.env.example`](.env.example) for the complete list with descriptions.
+Copy `.env.example` to `.env` and provide your credentials:
 
-Key variables:
-- `MONGODB_URI` — MongoDB Atlas connection string
-- `JWT_SECRET` — Secret for signing JWTs (min 32 chars)
-- `FIREBASE_PROJECT_ID` / `FIREBASE_CLIENT_EMAIL` / `FIREBASE_PRIVATE_KEY` — Firebase Admin SDK credentials
+```env
+PORT=5000
+NODE_ENV=development
+MONGODB_URI=mongodb+srv://<user>:<password>@cluster.mongodb.net/naukri4u
+JWT_SECRET=your_super_secret_jwt_key_min_32_chars
+REFRESH_TOKEN_SECRET=your_super_secret_refresh_key_min_32_chars
+FIREBASE_PROJECT_ID=your-firebase-project-id
+FIREBASE_CLIENT_EMAIL=your-firebase-service-account-email
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n..."
+```
 
-### Running
+### 3. Run Server
 
 ```bash
 # Development (hot-reload)
@@ -79,131 +125,19 @@ npm run dev
 # Production build
 npm run build
 npm start
-
-# Docker
-docker-compose up --build
 ```
 
-### Testing
+Interactive Swagger UI runs at: `http://localhost:5000/api/docs`
 
-```bash
-# Run all tests
-npm test
+---
 
-# Unit tests only
-npm run test:unit
+## 🌐 Production Deployment (Render)
 
-# Integration tests only
-npm run test:integration
+Render deployment configuration is included. Production Base API:
+`https://naukri4u-jz3j.onrender.com/api/v1`
 
-# With coverage
-npm run test:coverage
-```
+---
 
-### Linting
-
-```bash
-npm run lint
-npm run lint:fix
-npm run format
-```
-
-## API Endpoints
-
-### Authentication
-
-| Method | Endpoint | Description | Auth |
-|---|---|---|---|
-| POST | `/api/v1/auth/login` | Firebase ID token → JWT + Refresh Token | No |
-| POST | `/api/v1/auth/refresh` | Rotate refresh token | No |
-| POST | `/api/v1/auth/logout` | Revoke refresh token | Yes |
-| GET | `/api/v1/auth/me` | Get current user | Yes |
-
-### System
-
-| Method | Endpoint | Description | Auth |
-|---|---|---|---|
-| GET | `/api/v1/health` | Health check | No |
-
-### Swagger Documentation
-
-Available at `http://localhost:5000/api/docs` in development mode.
-
-## API Response Format
-
-### Success
-```json
-{
-  "success": true,
-  "message": "Operation successful",
-  "data": {},
-  "meta": {}
-}
-```
-
-### Error
-```json
-{
-  "success": false,
-  "message": "Validation failed",
-  "errors": [
-    { "field": "phoneNumber", "message": "Phone number is required" }
-  ]
-}
-```
-
-## Project Structure
-
-```
-src/
-├── config/        # Database, Firebase, Cloudinary, Logger, Swagger
-├── constants/     # Roles, permissions, HTTP status codes
-├── controllers/   # Thin request handlers
-├── helpers/       # Response formatter, pagination, token generation
-├── interfaces/    # TypeScript interfaces and enums
-├── middlewares/    # Auth, RBAC, validation, rate limiting, error handling
-├── models/        # Mongoose schemas
-├── repositories/  # Data access layer (CRUD + soft-delete)
-├── routes/        # Versioned API routes with Swagger annotations
-├── services/      # Business logic
-├── utils/         # ApiError, asyncHandler
-├── app.ts         # Express application factory
-└── server.ts      # Entry point with graceful shutdown
-```
-
-## Security
-
-- **Helmet** — HTTP security headers
-- **CORS** — Origin whitelisting
-- **Rate Limiting** — Global + endpoint-specific limiters
-- **NoSQL Injection** — Request sanitization via express-mongo-sanitize
-- **XSS** — Input sanitization via xss library
-- **HPP** — HTTP Parameter Pollution protection
-- **JWT** — Short-lived access tokens (15min)
-- **Refresh Token Rotation** — Tokens rotated on each use, reuse detection
-- **Soft Delete** — No permanent data deletion
-
-## Deployment
-
-### Railway
-
-```bash
-# Install Railway CLI
-npm install -g @railway/cli
-
-# Login and deploy
-railway login
-railway init
-railway up
-```
-
-### Docker
-
-```bash
-docker build -t job-portal-backend .
-docker run -p 5000:5000 --env-file .env job-portal-backend
-```
-
-## License
+## 📝 License
 
 Proprietary — All rights reserved.
